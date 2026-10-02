@@ -1,41 +1,22 @@
-
 # Agentic RAG using CrewAI
 
-This project leverages CrewAI to build an Agentic RAG that can search through your docs and fallbacks to web search in case it doesn't find the answer in the docs, have option to use either of deep-seek-r1 or llama 3.2 that runs locally. More details un Running the app section below!
+A local Agentic RAG application built with CrewAI, Qdrant, Chonkie, and Ollama.
 
-Before that, make sure you grab your FireCrawl API keys to search the web.
+Users can upload a PDF and ask questions about it. The application:
+- extracts and chunks the document
+- creates semantic embeddings
+- stores vectors in an in-memory Qdrant database
+- retrieves relevant content
+- uses CrewAI agents to generate the final response
+- runs locally with Ollama using `qwen2.5-coder:7b`
 
-**Get API Keys**:
-   - [FireCrawl](https://www.firecrawl.dev/i/api)
+## Tech Stack
 
-
-
-
-## Installation and setup
-
-**Get API Keys**:
-   - [FireCrawl](https://www.firecrawl.dev/i/api)
-
-
-**Install Dependencies**:
-   Ensure you have Python 3.11 or later installed.
-   ```bash
-   pip install crewai crewai-tools chonkie[semantic] markitdown qdrant-client fastembed
-   ```
-
-**Running the app**:
-
-To use deep-seek-rq use command ``` streamlit run app_deep_seek.py ```, for llama 3.2 use command ``` streamlit run app_llama3.2.py ```
-
----
-
-## 📬 Stay Updated with Our Newsletter!
-**Get a FREE Data Science eBook** 📖 with 150+ essential lessons in Data Science when you subscribe to our newsletter! Stay in the loop with the latest tutorials, insights, and exclusive resources. [Subscribe now!](https://join.dailydoseofds.com)
-
-[![Daily Dose of Data Science Newsletter](https://github.com/patchy631/ai-engineering/blob/main/resources/join_ddods.png)](https://join.dailydoseofds.com)
-
----
-
-## Contribution
-
-Contributions are welcome! Please fork the repository and submit a pull request with your improvements.
+- Python
+- CrewAI
+- Qdrant
+- Chonkie
+- MarkItDown
+- Ollama
+- Qwen 2.5 Coder
+- Streamlit
