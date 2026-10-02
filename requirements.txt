@@ -1,0 +1,5 @@
+crewai==0.203.2
+streamlit
+markitdown
+chonkie[semantic]
+qdrant-client
