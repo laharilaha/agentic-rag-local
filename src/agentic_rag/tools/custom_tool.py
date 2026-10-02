@@ -13,13 +13,13 @@ class DocumentSearchToolInput(BaseModel):
 
     query: str = Field(
         ...,
-        description="Query to search the document."
+        description="Query to search the document.",
     )
 
 
 class DocumentSearchTool(BaseTool):
     name: str = "DocumentSearchTool"
-    description: str = "Search the document for the given query."
+    description: str = "Search the uploaded document for relevant information."
     args_schema: Type[BaseModel] = DocumentSearchToolInput
 
     model_config = ConfigDict(extra="allow")
@@ -33,7 +33,7 @@ class DocumentSearchTool(BaseTool):
         # In-memory Qdrant database
         self.client = QdrantClient(":memory:")
 
-        # Same embedding model used by Chonkie
+        # Embedding model
         self.embedding_model = SemanticChunker(
             embedding_model="minishlab/potion-base-8M",
             threshold=0.5,
@@ -44,7 +44,7 @@ class DocumentSearchTool(BaseTool):
         self._process_document()
 
     def _extract_text(self) -> str:
-        """Extract text from PDF."""
+        """Extract text from PDF using MarkItDown."""
 
         md = MarkItDown()
         result = md.convert(self.file_path)
@@ -52,7 +52,7 @@ class DocumentSearchTool(BaseTool):
         return result.text_content
 
     def _create_chunks(self, raw_text: str):
-        """Create semantic chunks."""
+        """Create semantic chunks from the document."""
 
         chunker = SemanticChunker(
             embedding_model="minishlab/potion-base-8M",
@@ -64,7 +64,7 @@ class DocumentSearchTool(BaseTool):
         return chunker.chunk(raw_text)
 
     def _process_document(self):
-        """Process document and store embeddings in Qdrant."""
+        """Process the document and store embeddings in Qdrant."""
 
         raw_text = self._extract_text()
         chunks = self._create_chunks(raw_text)
@@ -93,7 +93,7 @@ class DocumentSearchTool(BaseTool):
                 ),
             )
 
-        # Insert vectors
+        # Store vectors and document text
         points = [
             models.PointStruct(
                 id=ids[i],
@@ -112,7 +112,7 @@ class DocumentSearchTool(BaseTool):
         )
 
     def _run(self, query: str) -> str:
-        """Search the document."""
+        """Search the document and return the most relevant chunks."""
 
         query_vector = self.embedding_model.embed(query)
 
@@ -123,7 +123,8 @@ class DocumentSearchTool(BaseTool):
         )
 
         docs = [
-            point.payload["document"]
+            f"Source: {point.payload['metadata']['source']}\n"
+            f"{point.payload['document']}"
             for point in results.points
         ]
 
